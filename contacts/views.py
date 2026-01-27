@@ -1,7 +1,9 @@
 from tkinter.font import names
 
-from rest_framework.views import APIView #get API tuzuu uchun k.k
-from rest_framework.response import Response #json formatta kaitar
+from rest_framework import status
+from rest_framework.generics import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from contacts.models import Contacts
 from .serializers import ContactsSerializer
 
@@ -33,6 +35,27 @@ class ContactList(APIView):
         contacts = Contacts.objects.all()
         serializer = ContactsSerializer(contacts, many=True)
         return Response(serializer.data)
+
+class ContactCreate(APIView):
+    def post(self,request):
+        serializer = ContactsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+class ContactDetail(APIView):
+    def get(self,ruquest,pk):
+        contact = get_object_or_404(Contacts,id=pk)
+        serializer = ContactsSerializer(contact)
+        return Response(serializer.data)
+
+class ContactDelete(APIView):
+    def delete(self,request,pk):
+        contact = get_object_or_404(Contacts,id=pk)
+        contact.delete()
+        return Response({'Contact':'Deleted'})
+
 
 
 
