@@ -2,34 +2,13 @@ from tkinter.font import names
 
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from contacts.models import Contacts
 from .serializers import ContactsSerializer
 from rest_framework.decorators import api_view
-
-
-
-class Hello(APIView):
-    def get(self, request):
-        return Response({'message': 'Men jazgan API'})
-
-class Goodbye(APIView):
-    def get(self, request):
-        return Response({'message': 'GOODBYE World'})
-
-class Hi(APIView):
-    def get(self, request):
-        return Response({'text':'Hi API!'})
-
-class Stud(APIView):
-    def get(self,request):
-        return Response({'Student': 'Ailin'})
-
-class Info(APIView):
-    def get(self,reguest):
-        return Response({"developer":"name",
-                         "project":"Contacts API"})
+from rest_framework import generics
 
 class ContactList(APIView):
     def get(self,request):
@@ -96,6 +75,21 @@ def contact_delete_fbv(request,pk):
     contact = get_object_or_404(Contacts,id=pk)
     contact.delete()
     return Response({'Contact:' :'Deleted'})
+
+class TestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,reguest):
+        return Response({'user':reguest.user.username})
+
+
+class ContactListCreate(generics.ListCreateAPIView):
+    queryset = Contacts.objects.all()
+    serializer_class = ContactsSerializer
+
+class ContactDetailUpdate(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Contacts.objects.all()
+    serializer_class = ContactsSerializer
 
 
 
